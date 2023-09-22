@@ -64,7 +64,7 @@ resource "aws_internet_gateway" "igw" {
     Name = "igw"
   }
 }
-resource "aws_route_table" "pub_rt1" {
+resource "aws_route_table" "pub_web-rt" {
   vpc_id = aws_vpc.main.id
   route {
         cidr_block = "0.0.0.0/0" 
@@ -75,12 +75,18 @@ resource "aws_route_table" "pub_rt1" {
     Name = "pub_rt1"
   }
 }
-resource "aws_route_table_association" "pub-sub1"{
-    subnet_id = aws_subnet.pub-sub1.id}"
-    route_table_id = aws_route_table.pub_rt1.id}"
+resource "aws_route_table_association" "pub-web-sub1"{
+    subnet_id = aws_subnet.pub-sub1.id
+    route_table_id = aws_route_table.pub_web-rt.id
 }
+resource "aws_route_table_association" "pub-sub1"{
+    subnet_id = aws_subnet.pub-sub2.id
+    route_table_id = aws_route_table.pub_web-rt.id}
+}
+
+
 # Private routes
-resource "aws_route_table" "prv-rt2" {
+resource "aws_route_table" "prv-app-rt" {
     vpc_id = aws_vpc.main.id
 
     route {
@@ -89,12 +95,16 @@ resource "aws_route_table" "prv-rt2" {
     }
 
     tags = {
-        Name = ""
+        Name = "prv-app-rt"
     }
 }
-resource "aws_route_table_association" "prv-sub13"{
+resource "aws_route_table_association" "prv-app-sub3"{
     subnet_id = aws_subnet.prv_sub3.id
-    route_table_id = aws_route_table.prv-rt2.id
+    route_table_id = aws_route_table.prv-app-rt.id
+}
+resource "aws_route_table_association" "prv-app-sub4"{
+    subnet_id = aws_subnet.prv_sub4.id
+    route_table_id = aws_route_table.prv-app-rt.id
 }
 # NAT Gateway to allow private subnet to connect out the way
 resource "aws_eip" "nat_gateway" {
@@ -110,4 +120,24 @@ resource "aws_nat_gateway" "nat-gateway" {
 
     # To ensure proper ordering, add Internet Gateway as dependency
     depends_on = [aws_internet_gateway.igw]
+}
+# Private routes
+resource "aws_route_table" "prv-db-rt" {
+    vpc_id = aws_vpc.main.id
+
+    route {
+        cidr_block = "0.0.0.0/0"
+        nat_gateway_id = aws_nat_gateway.nat_gateway.id}" 
+    }
+    tags = {
+        Name = "prv-app-rt"
+    }
+}
+resource "aws_route_table_association" "prv-app-sub5"{
+    subnet_id = aws_subnet.prv_sub5.id
+    route_table_id = aws_route_table.prv-app-rt.id
+}
+resource "aws_route_table_association" "prv-app-sub6"{
+    subnet_id = aws_subnet.prv_sub6.id
+    route_table_id = aws_route_table.prv-app-rt.id
 }
