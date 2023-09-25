@@ -8,55 +8,65 @@ enable_dns_hostnames =true
   }
 
 }
-resource "aws_subnet" "pub_sub1" {
+# Public subnet for web
+
+resource "aws_subnet" "public_sub1" {
   vpc_id     = aws_vpc.main.id
  availability_zone = "ap-south-1a"
   cidr_block = "10.0.1.0/24"
 map_public_ip_on_launch =true
   tags = {
-    Name = "sub1"
+    Name = "public_sub1"
   }
 }
-resource "aws_subnet" "pub_sub2" {
+
+resource "aws_subnet" "public_sub2" {
   vpc_id     = aws_vpc.main.id
  availability_zone = "ap-south-1b"
   cidr_block = "10.0.2.0/24"
 map_public_ip_on_launch =true
   tags = {
-    Name = "sub2"
+    Name = "public_sub2"
   }
+
 }
-resource "aws_subnet" "prv_sub3" {
+# private subnets for app
+
+resource "aws_subnet" "private_sub3" {
   vpc_id     = aws_vpc.main.id
  availability_zone = "ap-south-1a"
   cidr_block = "10.0.3.0/24"
   tags = {
-    Name = "sub3"
+    Name = "private_sub3"
   }
 }
-resource "aws_subnet" "prv_sub4" {
+resource "aws_subnet" "private_sub4" {
   vpc_id     = aws_vpc.main.id
  availability_zone = "ap-south-1b"
   cidr_block = "10.0.4.0/24"
   tags = {
-    Name = "sub4"
-  }
-}resource "aws_subnet" "prv_sub5" {
+    Name = "private_sub4"
+  } 
+}
+
+# private subnets for database
+resource "aws_subnet" "private_sub5" {
   vpc_id     = aws_vpc.main.id
  availability_zone = "ap-south-1a"
   cidr_block = "10.0.5.0/24"
   tags = {
-    Name = "sub5"
+    Name = "private_sub5"
   }
 }
-resource "aws_subnet" "prv_sub6" {
+resource "aws_subnet" "private_sub6" {
   vpc_id     = aws_vpc.main.id
  availability_zone = "ap-south-1b"
   cidr_block = "10.0.6.0/24"
   tags = {
-    Name = "sub6"
+    Name = "private_sub6"
   }
 }
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
@@ -64,48 +74,48 @@ resource "aws_internet_gateway" "igw" {
     Name = "igw"
   }
 }
-resource "aws_route_table" "pub_web-rt" {
+resource "aws_route_table" "public_web-rt" {
   vpc_id = aws_vpc.main.id
   route {
-        cidr_block = "0.0.0.0/0" 
-        gateway_id = aws_internet_gateway.igw.id 
+        cidr_block = "0.0.0.0/0"
+        gateway_id = aws_internet_gateway.igw.id
     }
 
    tags = {
-    Name = "pub_rt1"
+    Name = "public_rt1"
   }
+    
+resource "aws_route_table_association" "public-web-sub1"{
+    subnet_id = aws_subnet.public_sub1.id
+    route_table_id = aws_route_table.public_web-rt.id
 }
-resource "aws_route_table_association" "pub-web-sub1"{
-    subnet_id = aws_subnet.pub-sub1.id
-    route_table_id = aws_route_table.pub_web-rt.id
+resource "aws_route_table_association" "public_sub2"{
+    subnet_id = aws_subnet.public_sub2.id
+    route_table_id = aws_route_table.public_web-rt.id
 }
-resource "aws_route_table_association" "pub-sub1"{
-    subnet_id = aws_subnet.pub-sub2.id
-    route_table_id = aws_route_table.pub_web-rt.id}
-}
-
 
 # Private routes
-resource "aws_route_table" "prv-app-rt" {
+resource "aws_route_table" "private_app_rt" {
     vpc_id = aws_vpc.main.id
 
     route {
         cidr_block = "0.0.0.0/0"
         nat_gateway_id = aws_nat_gateway.nat_gateway.id}" 
     }
-
     tags = {
-        Name = "prv-app-rt"
+        Name = "private_app_rt"
     }
 }
-resource "aws_route_table_association" "prv-app-sub3"{
-    subnet_id = aws_subnet.prv_sub3.id
-    route_table_id = aws_route_table.prv-app-rt.id
+resource "aws_route_table_association" "private_app_sub3"{
+    subnet_id = aws_subnet.private_sub3.id
+    route_table_id = aws_route_table.private_app_rt.id
 }
-resource "aws_route_table_association" "prv-app-sub4"{
-    subnet_id = aws_subnet.prv_sub4.id
-    route_table_id = aws_route_table.prv-app-rt.id
+resource "aws_route_table_association" "private_app_sub4"{
+    subnet_id = aws_subnet.private_sub4.id
+    route_table_id = aws_route_table.private_app_rt.id
 }
+
+
 # NAT Gateway to allow private subnet to connect out the way
 resource "aws_eip" "nat_gateway" {
     vpc = true
@@ -122,7 +132,7 @@ resource "aws_nat_gateway" "nat-gateway" {
     depends_on = [aws_internet_gateway.igw]
 }
 # Private routes
-resource "aws_route_table" "prv-db-rt" {
+resource "aws_route_table" "private_db_rt" {
     vpc_id = aws_vpc.main.id
 
     route {
@@ -130,14 +140,14 @@ resource "aws_route_table" "prv-db-rt" {
         nat_gateway_id = aws_nat_gateway.nat_gateway.id}" 
     }
     tags = {
-        Name = "prv-app-rt"
+        Name = "private_db_rt"
     }
 }
-resource "aws_route_table_association" "prv-app-sub5"{
-    subnet_id = aws_subnet.prv_sub5.id
-    route_table_id = aws_route_table.prv-app-rt.id
+resource "aws_route_table_association" "private_db_sub5"{
+    subnet_id = aws_subnet.private_sub5.id
+    route_table_id = aws_route_table.private-app-rt.id
 }
-resource "aws_route_table_association" "prv-app-sub6"{
-    subnet_id = aws_subnet.prv_sub6.id
-    route_table_id = aws_route_table.prv-app-rt.id
+resource "aws_route_table_association" "private_db_sub6"{
+    subnet_id = aws_subnet.private_sub6.id
+    route_table_id = aws_route_table.private-db-rt.id
 }
