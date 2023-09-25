@@ -4,7 +4,7 @@ resource "aws_security_group" "sg2" {
   vpc_id      = aws_vpc.main.id
 
   dynamic "ingress" {
-    for_each = [22, 80, 443, 3306, 2049]
+    for_each = [22,80,443,3306,2049]
     iterator = port
     content {
       description = "tls from vpc"
