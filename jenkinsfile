@@ -1,0 +1,37 @@
+#install terraform plugin on jenkins 
+#manaage jenkins- global tool configuration 
+#provide terraform path where it is installed /usr/bin -and version
+
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+    
+        stage ("terraform init") {
+            steps {
+                sh ("terraform init -reconfigure") 
+            }
+        }
+        
+        stage ("plan") {
+            steps {
+                sh ('terraform plan') 
+            }
+        }
+
+        stage (" Action") {
+            steps {
+                sh "Terraform plan"
+                sh ('terraform apply --auto-approve') 
+           }
+        }
+    }
+}
+  
