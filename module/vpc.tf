@@ -84,7 +84,7 @@ resource "aws_route_table" "public_web-rt" {
    tags = {
     Name = "public_rt1"
   }
-    
+ }   
 resource "aws_route_table_association" "public-web-sub1"{
     subnet_id = aws_subnet.public_sub1.id
     route_table_id = aws_route_table.public_web-rt.id
@@ -98,9 +98,8 @@ resource "aws_route_table_association" "public_sub2"{
 resource "aws_route_table" "private_app_rt" {
     vpc_id = aws_vpc.main.id
 
-    route {
-        cidr_block = "0.0.0.0/0"
-        nat_gateway_id = aws_nat_gateway.nat_gateway.id}" 
+    route {        cidr_block = "0.0.0.0/0"
+        nat_gateway_id = aws_nat_gateway.nat_gateway.id
     }
     tags = {
         Name = "private_app_rt"
@@ -137,7 +136,7 @@ resource "aws_route_table" "private_db_rt" {
 
     route {
         cidr_block = "0.0.0.0/0"
-        nat_gateway_id = aws_nat_gateway.nat_gateway.id}" 
+        nat_gateway_id = aws_nat_gateway.nat_gateway.id 
     }
     tags = {
         Name = "private_db_rt"
