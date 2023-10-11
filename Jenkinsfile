@@ -13,7 +13,11 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/kavitaghule/terraform2.git'
             }
         }
-    
+    stage ("mv file") {
+            steps {
+               sh 'mv terraform_install.sh Jenkinsfile /opt'
+            }
+        }
         stage ("terraform init") {
             steps {
                 sh ("terraform init") 
