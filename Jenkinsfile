@@ -10,13 +10,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/kavitaghule/terraform2.git'
             }
         }
     
         stage ("terraform init") {
             steps {
-                sh ("terraform init -reconfigure") 
+                sh ("terraform init") 
             }
         }
         
