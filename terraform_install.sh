@@ -6,7 +6,7 @@ sudo yum -y install terraform
 
 # install hashicorp
 sudo yum -y install vault
-vault server -dev
+vault server -dev &
 #Unseal Key: PLV0OXO9VmF5VB8qAnq4pQIGzWkzzYypRNcDtrhSSgU=
 #Root Token: hvs.6j4cuewowBGit65rheNoceI7
 export VAULT_ADDR='http://127.0.0.1:8200'
