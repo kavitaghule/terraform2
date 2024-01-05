@@ -1,0 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket         = "your-s3-bucket-name"
+    key            = "path/to/your/terraform-state.tfstate"
+    region         = "your-aws-region"
+    encrypt        = true
+    dynamodb_table = "your-lock-table-name"
+  }
+}
+terraform show
+terraform state pull
+terraform state push
